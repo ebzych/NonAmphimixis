@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+
+import sys
+from analyzer import Analyzer
+from builder import Builder
+
+if len(sys.argv) >= 2:
+    tool = sys.argv[1]
+    match tool:
+        case "analyze":
+            print("*analyzing info here*")
+            if len(sys.argv) >= 3:
+                analyzer = Analyzer(sys.argv[2])
+                analyzer.analyze()
+            else:
+                print("don't specified a path")
+        case "configure":
+            print("*configure cli here*")
+        case "build":
+            print("*building info here*")
+            Builder.build()
+        case "profile":
+            print("*profiling cli here*")
+        case _:
+            print("ERROR")
+else:
+    print("no to do")

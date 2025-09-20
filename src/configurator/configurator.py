@@ -8,7 +8,7 @@ import general
 def configure(
     project: general.Project,
     build_path: str,
-    arch: general.IArch,
+    machine: general.RemoteMachine,
     is_specified_script: bool,
     specified_script: str,
     build_system: general.IBuildSystem,
@@ -18,11 +18,14 @@ def configure(
 ):
     """Function to configure a new build and save its configuration to a JSON file"""
 
+    project.build_system = build_system
+    project.runner = runner
+
     build_name = input("Name current build:\n")
     build_path = os.path.join(build_path, build_name)
     os.makedirs(build_path, exist_ok=True)
 
-    build = general.Build(arch, build_system, runner, build_path)
+    build = general.Build(machine, build_path)
     build.is_specified_script = is_specified_script
     build.specified_script = specified_script
     build.config_flags = config_flags

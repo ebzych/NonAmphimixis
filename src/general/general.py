@@ -1,6 +1,30 @@
 """The common module that is used in most other modules"""
 
+from enum import Enum
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+
+
+class Arch(Enum):
+    """Supported architectures"""
+
+    X86 = 0
+    RISCV = 1
+    ARM = 2
+
+
+@dataclass
+class RemoteMachine:
+    """Information about the remote machine
+
+    :var arch Arch: Architecture of the remote machine.
+    :var ip str: IP address of the remote machine.
+    :var port int: Port of ssh service of the remote machine to connect.
+    """
+
+    arch: Arch
+    ip: str
+    port: int
 
 
 class IArch(ABC):
@@ -38,35 +62,37 @@ class IBuildSystem(ABC):
         else return string 'command' with 'runner_flags' inserted"""
 
 
+@dataclass
 class Build:
-    """Class with information about one build of project"""
+    """Class with information about one build of project
 
-    def __init__(
-        self,
-        # directory { dir:builded_project, file:config.json, file:build.log, ... }
-        arch: IArch,
-        #   and False if script is simple: configuration -> build
-        build_system: IBuildSystem,  # is high-level build system
-        runner: IBuildSystem,  # is low-level build system
-        build_path: str,  # path to directory with this build;
-        is_specified_script: bool = False,  # True if user specify build script
-        specified_script: str = "",
-        config_flags: str = "",
-        compiler_flags: str = "",
-    ):
-        self.build_path = build_path
-        self.arch = arch
-        self.is_specified_script = is_specified_script
-        self.specified_script = specified_script
-        self.build_system = build_system
-        self.config_flags = config_flags
-        self.compiler_flags = compiler_flags
-        self.runner = runner
+    :var RemoteMachine machine: Information about the remote machine.
+    :var str build_path: Path to the directory with this build.
+    :var bool is_specified_script: True if user specified a build script, False if script is simple.
+    :var str specified_script: The user-specified build script.
+    :var str config_flags: Configuration flags for the build.
+    :var str compiler_flags: Compiler flags for the build.
+    """
+
+    machine: RemoteMachine
+    build_path: str
+    is_specified_script: bool = False
+    specified_script: str = ""
+    config_flags: str = ""
+    compiler_flags: str = ""
 
 
+@dataclass
 class Project:
-    """Class with information about project and his builds"""
+    """Class with information about project and his builds
 
-    def __init__(self, repo_path: str, builds: list[Build]):
-        self.path = repo_path
-        self.builds = builds
+    :var str path: Path to project for research.
+    :var IBuildSystem build_system: High-level build system interface.
+    :var IBuildSystem runner: Low-level build system interface.
+    :var list[Build]: List of project configurations to be build.
+    """
+
+    path: str
+    build_system: IBuildSystem
+    runner: IBuildSystem
+    builds: list[Build]

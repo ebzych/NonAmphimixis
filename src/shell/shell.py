@@ -66,8 +66,11 @@ class _SSHHandler(IShell):
 
     def __del__(self):
         self.ssh.close()
-        self.stdout.close()
-        self.stdin.close()
+        try:
+            self.stdout.close()
+            self.stdin.close()
+        except AttributeError:
+            pass
 
     def run(self, command: str):
         if self.stdin is None:

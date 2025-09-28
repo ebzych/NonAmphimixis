@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 import ipaddress
 import subprocess
 import paramiko
-from dotenv import load_dotenv
 
 
 class IShell(ABC):
@@ -22,11 +21,13 @@ class IShell(ABC):
         raise NotImplementedError
 
 
-class Shell(IShell):
+class Shell:
     """Shell class to manage shell operations."""
 
-    def __init__(self, ip: str, port: str):
+    def __init__(self, ip: str, port: str, username: str, password: str):
         self._shell: IShell
+        self.username = username
+        self.password = password
         self.ip = ipaddress.ip_address(ip)
         self.port = port
 
@@ -35,25 +36,29 @@ class Shell(IShell):
         if self.ip.is_loopback:
             self._shell = _LocalShellHandler()
         else:
-            self._shell = _SSHHandler(str(self.ip), int(self.port))
+            self._shell = _SSHHandler(
+                str(self.ip), int(self.port), self.username, self.password
+            )
 
     def run(self, command: str):
         """Run the command through the shell."""
         self._shell.run(command)
 
     def readline(self) -> str:
+        """Read a line from the shell output."""
         return self._shell.readline()
 
 
 class _SSHHandler(IShell):
-    def __init__(self, ip: str, port: int):
+    def __init__(self, ip: str, port: int, username: str, password: str | None):
         self.ip = ip
         self.port = port
+        self.username = username
+        self.password = password
         self.ssh = paramiko.SSHClient()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        load_dotenv()
         self.ssh.connect(
-            self.ip, self.port, username="ub", password=os.getenv(key=f"{self.ip}_key")
+            self.ip, self.port, username=self.username, password=self.password
         )
         channel = self.ssh.invoke_shell()
         self.stdin = channel.makefile("wb")

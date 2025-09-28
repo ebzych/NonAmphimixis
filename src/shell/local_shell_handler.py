@@ -6,7 +6,7 @@ from .shell_interface import IShell
 
 
 class _LocalShellHandler(IShell):
-    def __init__(self):
+    def __init__(self) -> None:
         default_shell = os.getenv("SHELL")
         if default_shell is None:
             raise TypeError("Can't get default shell path")
@@ -16,11 +16,11 @@ class _LocalShellHandler(IShell):
             stdout=subprocess.PIPE,
         )
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.shell.kill()
         self.shell.wait()
 
-    def run(self, command: str):
+    def run(self, command: str) -> None:
         if self.shell.stdin is None:
             raise BrokenPipeError("Can't write to process' stdin")
 

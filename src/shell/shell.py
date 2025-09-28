@@ -1,6 +1,7 @@
 """Module for shell operations."""
 
 import ipaddress
+from typing import Self
 
 from .shell_interface import IShell
 from .ssh_shell_handler import _SSHHandler
@@ -17,7 +18,7 @@ class Shell:
         self.ip = ipaddress.ip_address(ip)
         self.port = port
 
-    def connect(self):
+    def connect(self) -> Self:
         """Connect to the shell based on the IP address."""
         if self.ip.is_loopback:
             self._shell = _LocalShellHandler()
@@ -26,7 +27,9 @@ class Shell:
                 str(self.ip), int(self.port), self.username, self.password
             )
 
-    def run(self, command: str):
+        return self
+
+    def run(self, command: str) -> None:
         """Run the command through the shell."""
         self._shell.run(command)
 

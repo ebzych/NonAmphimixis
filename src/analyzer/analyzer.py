@@ -8,9 +8,10 @@ import json
 class Analyzer:
     """Class that analyzes project's repository and creates file with its information"""
 
+    ci_list = ["**/ci", "**/.github/workflows/*.yml"]
+
     build_systems_list = {
         "**/CMakeLists.txt": "cmake",
-        "**/*.cmake": "cmake",
         "**/configure.ac": "autoconf",
         "**/*meson": "meson",
         "**/*bazel": "bazel",
@@ -34,24 +35,35 @@ class Analyzer:
     def _search_tests(self):
         if glob.glob(os.path.join(self.repo_path, "**/*test*"), recursive=True):
             self.results["tests"] = True
+        if self.results["tests"] is True:
+            print("tests: found")
+        else:
+            print("tests: not found")
 
     def _search_benchmarks(self):
         if glob.glob(os.path.join(self.repo_path, "**/*benchmark*"), recursive=True):
             self.results["benchmarks"] = True
+        if self.results["benchmarks"] is True:
+            print("benchmarks: found")
+        else:
+            print("benchmarks: not found")
 
     def _search_ci(self):
-        if glob.glob(os.path.join(self.repo_path, "**/ci"), recursive=True):
-            self.results["ci"] = True
-
-        if glob.glob(
-            os.path.join(self.repo_path, "**/.github/workflows/*.yml"), recursive=True
-        ):
-            self.results["ci"] = True
+        for pattern in self.ci_list:
+            if glob.glob(os.path.join(self.repo_path, pattern), recursive=True):
+                self.results["ci"] = True
+        if self.results["ci"] is True:
+            print("ci: found")
+        else:
+            print("ci: not found")
 
     def _search_build_systems(self):
+        print("build systems:")
         for pattern, system in self.build_systems_list.items():
             if glob.glob(os.path.join(self.repo_path, pattern), recursive=True):
                 self.results["build_systems"][system] = True
+            if self.results["build_systems"][system] is True:
+                print(f"\t{system}")
 
     def _search_dependencies(self):
         dep_path = os.path.join(self.repo_path, "third_party")
@@ -62,6 +74,9 @@ class Analyzer:
                 if os.path.isdir(os.path.join(dep_path, d))
             ]
             self.results["dependencies"].extend(dirs)
+        print("dependencies:")
+        for dep in self.results["dependencies"]:
+            print(f"\t{dep}")
 
     def analyze(self):
         """Analyzes project and collects its information"""
@@ -72,8 +87,6 @@ class Analyzer:
         self._search_ci()
         self._search_build_systems()
         self._search_dependencies()
-
-        print("Analyzing done\n")
 
         with open("amphimixis.log", "w", encoding="utf8") as file:
             json.dump(self.results, file, indent=4)

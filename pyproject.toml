@@ -4,4 +4,6 @@ version = "0.1.0"
 description = "Build automation and profiling tool for Linux projects across varios architectures."
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "paramiko>=4.0.0",
+]

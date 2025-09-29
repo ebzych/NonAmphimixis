@@ -1,25 +1,23 @@
-from general import general
-from builder import builder
+import sys
+import general, analyzer, builder, configurator, profiler
 
+analyzer_ = analyzer.Analyzer(sys.argv[1])
+
+analyzer_.analyze()
 
 project = general.Project(
-    "/home/bzych/tinyxml2",
-    [
-        general.Build(
-            general.MachineInfo(
-                general.Arch.X86,
-                "xxxx.xxxx.xxxx.xxxx",
-                general.MachineAuthenticationInfo("bzych", "1234", 8000),
-            ),
-            "/home/bzych/tinyxml2_build",
-            False,
-            "",
-            "",
-            "",
-        )
-    ],
-    general.CMake,
-    general.Make,
+    sys.argv[1],
+    [],
+    general.build_systems_dict["make"],
+    general.build_systems_dict["cmake"],
 )
 
-builder.Builder.build_for_linux(project, project.builds[0])
+configurator.parse_config(project)
+
+builder.Builder.process(project)
+
+profiler_ = profiler.Profiler(project.builds[0])
+
+profiler_.execution_time()
+
+print(profiler_.stats)

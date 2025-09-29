@@ -62,7 +62,7 @@ def configure(
 
     config = build.__dict__
 
-    config_name = f"{platform_info['id']}_{receipt_info['id']}"
+    config_name = f"{platform_info['id']}_{receipt_info['id']}_config"
     with open(config_name, "wb") as file:
         pickle.dump(config, file)
 

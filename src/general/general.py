@@ -176,3 +176,9 @@ class Make(IBuildSystem):
             raise NotImplementedError
 
         return "make -j" + str(cpu_count())
+
+
+build_systems_dict: dict[str, type[IBuildSystem]] = {
+    "cmake": CMake,
+    "make": Make,
+}

@@ -12,6 +12,19 @@ def parse_config(project: general.Project) -> None:
     project.builds = []
     with open("input.yml", "r", encoding="UTF-8") as f:
         input_config = yaml.safe_load(f)
+
+        if not isinstance(input_config["build_system"], str):
+            raise TypeError("Invalid build system type :(, look config file")
+
+        project.build_system = general.build_systems_dict[
+            input_config["build_system"].lower()
+        ]
+
+        if not isinstance(input_config["runner"], str):
+            raise TypeError("Invalid runner type ^~^, look config file")
+
+        project.runner = general.build_systems_dict[input_config["runner"].lower()]
+
         for build in input_config["builds"]:
             configure(
                 project,

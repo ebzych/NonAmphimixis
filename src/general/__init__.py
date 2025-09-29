@@ -7,6 +7,7 @@ from .general import (
     IBuildSystem,
     MachineAuthenticationInfo,
     Arch,
+    build_systems_dict,
 )
 
 __all__ = [
@@ -16,4 +17,5 @@ __all__ = [
     "IBuildSystem",
     "MachineAuthenticationInfo",
     "Arch",
+    "build_systems_dict",
 ]

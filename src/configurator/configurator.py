@@ -2,49 +2,68 @@
 
 from os import path, getcwd
 import pickle
-import json
+import yaml
 import general
 
 
-def configure(project: general.Project, build_dict: dict[str, str]) -> None:
-    """Function to configure a new build and save its configuration to a JSON file"""
+def parse_config(project: general.Project) -> None:
+    """Module enter function"""
 
-    build_path = generate_build_path(project)
+    project.builds = []
+    with open("input.yml", "r", encoding="UTF-8") as f:
+        input_config = yaml.safe_load(f)
+        for build in input_config["builds"]:
+            configure(
+                project,
+                get_by_id(input_config["platforms"], build["platform_id"]),
+                get_by_id(input_config["receipts"], build["receipt_id"]),
+            )
+
+
+def configure(
+    project: general.Project,
+    platform_info: dict[str, str],
+    receipt_info: dict[str, str],
+) -> None:
+    """Function to configure a new build and save its configuration to a Pickle file"""
+
+    build_path = generate_build_path(platform_info["id"], receipt_info["id"])
 
     auth = general.MachineAuthenticationInfo(
-        build_dict["username"], build_dict["password"], int(build_dict["port"])
+        platform_info["username"], platform_info["password"], int(platform_info["port"])
     )
 
     machine = general.MachineInfo(
-        general.Arch(build_dict["arch"].lower()), build_dict["ip"], auth
+        general.Arch(platform_info["arch"].lower()), platform_info["ip"], auth
     )
 
-    if "script" in build_dict:
-        build = general.Build(machine, build_path, True, build_dict["script"])
+    if "script" in receipt_info:
+        build = general.Build(machine, build_path, True, receipt_info["script"])
     else:
         build = general.Build(machine, build_path, False)
 
-    build.config_flags = build_dict["config_flags"]
-    build.compiler_flags = build_dict["compiler_flags"]
+    build.config_flags = receipt_info["config_flags"]
+    build.compiler_flags = receipt_info["compiler_flags"]
 
     project.builds.append(build)
 
     config = build.__dict__
 
-    config_name = f"{project.build_system}_{project.runner}"
+    config_name = f"{platform_info['id']}_{receipt_info['id']}"
     with open(config_name, "wb") as file:
         pickle.dump(config, file)
 
 
-def generate_build_path(project: general.Project) -> str:
-    """Function to create path to build"""
-    return path.join(getcwd(), f"{project.build_system}_{project.runner}")
+def generate_build_path(platform_id: str, receipt_id: str) -> str:
+    """Function to create path to build depending on platform and receipt id"""
+
+    return path.join(getcwd(), f"{platform_id}_{receipt_id}")
 
 
-def parse_config(project: general.Project) -> None:
-    """Module enter function"""
-    project.builds = []
-    with open("input.json", "r", encoding="UTF-8") as f:
-        input_config = json.load(f)
-        for build in input_config["builds"]:
-            configure(project, build)
+def get_by_id(items: list[dict[str, str]], target_id: str) -> dict[str, str]:
+    """Finds platform or receipt by id"""
+
+    for item in items:
+        if item["id"] == target_id:
+            return item
+    return {}

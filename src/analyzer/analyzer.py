@@ -85,7 +85,7 @@ class Analyzer:
         """Analyzes project and collects its information"""
 
         if not os.path.exists(self.repo_path):
-            raise FileNotFoundError(f"Directory {self.repo_path} not found")
+            raise FileNotFoundError(f'Directory "{self.repo_path}" not found')
 
         print(f"Analyzing {self.repo_path}\n")
 

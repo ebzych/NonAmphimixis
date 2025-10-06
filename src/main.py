@@ -1,9 +1,13 @@
 import sys
 import general, analyzer, builder, configurator, profiler
 
-analyzer_ = analyzer.Analyzer(sys.argv[1])
+try:
+    analyzer_ = analyzer.Analyzer(sys.argv[1])
 
-analyzer_.analyze()
+    analyzer_.analyze()
+except FileNotFoundError as e:
+    print(f"{e}")
+    exit(-1)
 
 project = general.Project(
     sys.argv[1],

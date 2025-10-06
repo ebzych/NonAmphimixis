@@ -80,6 +80,11 @@ class Analyzer:
 
     def analyze(self):
         """Analyzes project and collects its information"""
+
+        if not os.path.exists(self.repo_path):
+            print("Directory not found")
+            return
+
         print(f"Analyzing {self.repo_path}\n")
 
         self._search_tests()

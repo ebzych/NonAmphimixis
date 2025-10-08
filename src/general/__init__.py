@@ -10,6 +10,8 @@ from .general import (
     build_systems_dict,
 )
 
+from .ToolchainManager import ToolchainManager
+
 __all__ = [
     "Project",
     "Build",
@@ -18,4 +20,5 @@ __all__ = [
     "MachineAuthenticationInfo",
     "Arch",
     "build_systems_dict",
+    "ToolchainManager",
 ]

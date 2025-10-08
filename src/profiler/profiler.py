@@ -3,7 +3,7 @@
 import os
 import subprocess
 import time
-import general
+from .. import general
 
 STATS_EXECUTION_TIME_FIELD = "execution_time"
 

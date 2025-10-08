@@ -3,7 +3,7 @@
 import subprocess
 import shlex
 import os
-from general import Project, Build
+from ..general import Project, Build
 
 
 def run_command(command: str, cwd: str = "") -> bool:

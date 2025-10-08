@@ -1,5 +1,5 @@
 import sys
-import general, analyzer, builder, configurator, profiler
+from src import general, analyzer, builder, configurator, profiler
 
 try:
     analyzer_ = analyzer.Analyzer(sys.argv[1])

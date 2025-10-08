@@ -3,7 +3,7 @@
 from os import path, getcwd
 import pickle
 import yaml
-import general
+from .. import general
 
 
 def parse_config(project: general.Project) -> None:

@@ -1,4 +1,7 @@
 .venv/
+.amphimixis/
 __pycache__/
 .vscode/
 config.json
+uv.lock
+*.egg-info

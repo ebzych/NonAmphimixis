@@ -10,6 +10,8 @@ class _LocalShellHandler(IShell):
         default_shell = os.getenv("SHELL")
         if default_shell is None:
             raise TypeError("Can't get default shell path")
+
+        # pylint: disable=consider-using-with
         self.shell = subprocess.Popen(
             [default_shell],
             stdin=subprocess.PIPE,
